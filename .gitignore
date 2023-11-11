@@ -7,5 +7,5 @@ examples.php
 manual_test.php
 prepros.config
 dbconfig.php
-DatatablesSchemas/
+DatatableSchemas/
 test.http
