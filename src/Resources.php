@@ -85,4 +85,18 @@ class Resources
             echo '<script src="' . $jsResource . '" crossorigin="anonymous"></script>';
         }
     }
+
+    public static function autoLoadDatatableJS(string $id, string $schema, string $language, int $pageLength, string $errorMessage): void
+    {
+        echo "<script>
+        $.fn.dataTable.ext.errMode = () => alert('" . $errorMessage . "');
+        new DataTable('#" . $id . "', {
+            ajax: 'src/server_processing.php?schema=" . $schema . "',"
+            . Language::setLanguage($language)->autoLoadLanguageURL() .
+            "processing: true,
+            serverSide: true,
+            'pageLength': " . $pageLength . "
+        });
+    </script>";
+    }
 }

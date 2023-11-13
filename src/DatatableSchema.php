@@ -34,6 +34,7 @@ class DatatableSchema
         if (!empty($columnFormat)) {
             $this->columns[self::$addedColumns]['formatter'] = $columnFormat;
         }
+
         self::$addedColumns++;
         return $this;
     }

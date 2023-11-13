@@ -21,29 +21,33 @@ class Datatable
         $this->pageLength = $this->getDefaultPageLength();
         $this->class = $this->getDefaultClass();
         $this->loadingErrorMessage = $this->getDefaultErrorMessage();
+        $this->setColumnNames();
     }
     private function getDefaultLanguage(): string
     {
-        return $_ENV['DT_LANGUAGE'] ?? 'en';
-    }
-    private function getDefaultPageLength(): int
-    {
-        return $_ENV['DT_PAGE_LENGTH'] ?? 25;
-    }
-    private function getDefaultClass(): string
-    {
-        return $_ENV['DT_TABLE_CLASSES'] ?? 'table';
-    }
-    private function getDefaultErrorMessage(): string
-    {
-        return $_ENV['DT_ERROR_MESSAGE'] ?? 'Error loading table data. Please update. If the error persists contact the developer.';
+        return DatatableConfig::getDefaultLanguage();
     }
 
-    public function setColumnNames(array $columnNames): self
+    private function getDefaultPageLength(): int
+    {
+        return DatatableConfig::getDefaultPageLength();
+    }
+
+    private function getDefaultClass(): string
+    {
+        return DatatableConfig::getDefaultClass();
+    }
+
+    private function getDefaultErrorMessage(): string
+    {
+        return DatatableConfig::getDefaultErrorMessage();
+    }
+
+    /*public function setColumnNames(array $columnNames): self
     {
         $this->columnNames = $columnNames;
         return $this;
-    }
+    }*/
     public function addClass(string $class): self
     {
         $this->class .= $class;
@@ -84,15 +88,19 @@ class Datatable
     }
     public function autoLoadDatatableJS(): void
     {
-        echo "<script>
-        $.fn.dataTable.ext.errMode = () => alert('" . $this->loadingErrorMessage . "');
-        new DataTable('#" . $this->id . "', {
-            ajax: 'src/server_processing.php?schema=" . $this->schema . "',"
-            . Language::setLanguage($this->language)->autoLoadLanguageURL() .
-            "processing: true,
-            serverSide: true,
-            'pageLength': " . $this->pageLength . "
-        });
-    </script>";
+        Resources::autoLoadDatatableJS($this->id, $this->schema, $this->language, $this->pageLength, $this->loadingErrorMessage);
+    }
+    public function getCSSResources(): void
+    {
+        Resources::autoLoadCssResources();
+    }
+    public function getJSResources(): void
+    {
+        Resources::autoLoadJsResources();
+    }
+    private function setColumnNames(): void
+    {
+        $schemaInstance = (new CallSchema())->getInstance($this->schema);
+        $this->columnNames = $schemaInstance->getColumnsName();
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use hstanleycrow\EasyPHPDatatables\CallSchema;
 use hstanleycrow\EasyPHPDatatables\DatabaseConnector;
 
 /*
@@ -27,9 +28,10 @@ $schema = filter_input(INPUT_GET, 'schema', FILTER_UNSAFE_RAW);
 if (empty($schema) || !is_string($schema)) {
     throw new Exception('Schema is required');
 }
-$namespace = $_ENV['DT_SCHEMAS_NAMESPACE'] . '\\' ?? 'hstanleycrow\DatatableSchemas\\';
+/*$namespace = $_ENV['DT_SCHEMAS_NAMESPACE'] . '\\' ?? 'hstanleycrow\DatatableSchemas\\';
 $schema = $namespace . ucwords($schema) . 'Datatable';
-$schemaInstance = new $schema();
+$schemaInstance = new $schema();*/
+$schemaInstance = (new CallSchema())->getInstance($schema);
 $sql_details = $dbConnector->getConnectionDetails();
 $table = $schemaInstance->getTable();
 $primaryKey = $schemaInstance->getPrimaryKey();
