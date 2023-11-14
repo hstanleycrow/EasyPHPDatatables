@@ -4,38 +4,47 @@ namespace hstanleycrow\EasyPHPDatatables;
 
 use hstanleycrow\EasyPHPDatatables\Formatters\ColumnFormatter;
 
-class DatatableSchema
+class DatatableDefinition
 {
-    protected string $table;
+    protected array $definitionColumnsList = [];
+    protected string $joinQuery;
+    protected string $extraCondition;
+    protected string $dbTable;
     protected string $primaryKey;
-    protected array $columns = [];
     protected static int $addedColumns = 0;
     protected array $columnsName = [];
     protected ColumnFormatter $formatter;
 
-    public function __construct(string $table, string $primaryKey)
+    public function __construct(string $dbTable, string $primaryKey)
     {
-        $this->table = $table;
+        $this->dbTable = $dbTable;
         $this->primaryKey = $primaryKey;
         $this->formatter = new ColumnFormatter();
     }
 
-    public function addColumn(string $dbField, string $format  = 'text'): self
+    public function addColumn(string $dbField, string $field, ?string $as = null, string $format  = 'text'): self
     {
         $formatClass  = 'hstanleycrow\EasyPHPDatatables\Formatters\\' . ucwords($format) . 'Formatter';
         if (!$this->isValidFormatter($formatClass)) {
             throw new \InvalidArgumentException("Format '$format' is not supported.");
         }
         $columnFormat = (new $formatClass())->generate();
-        $this->columns[] = [
+        $column = [
             'db' => $dbField,
+            'field' => $field,
             'dt' => self::$addedColumns,
         ];
+        if (!empty($as)) {
+            $column['as'] = $as;
+        }
         if (!empty($columnFormat)) {
-            $this->columns[self::$addedColumns]['formatter'] = $columnFormat;
+            $column['formatter'] = $columnFormat;
         }
 
+        $this->definitionColumnsList[] = $column;
+
         self::$addedColumns++;
+
         return $this;
     }
     private function isValidFormatter($formatClass): bool
@@ -45,7 +54,7 @@ class DatatableSchema
 
     public function getTable(): string
     {
-        return $this->table;
+        return $this->dbTable;
     }
     public function getColumnsName(): array
     {
@@ -55,8 +64,20 @@ class DatatableSchema
     {
         return $this->primaryKey;
     }
-    public function getColumns(): array
+    public function getDTColumnsDefinitions(): array
     {
-        return $this->columns;
+        return $this->definitionColumnsList;
+    }
+    public function getJoinQuery(): string
+    {
+        return $this->joinQuery;
+    }
+
+    /**
+     * Get the value of extraCondition
+     */
+    public function getExtraCondition()
+    {
+        return $this->extraCondition;
     }
 }

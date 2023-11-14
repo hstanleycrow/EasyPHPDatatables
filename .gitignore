@@ -3,9 +3,11 @@ vendor
 composer.lock
 index.php
 /src/helpers.php
+src/DatatableDefinition.old.php
+src/ssp.class.php
 examples.php
 manual_test.php
 prepros.config
 dbconfig.php
-DatatableSchemas/
+DatatablesDefinitions/
 test.http

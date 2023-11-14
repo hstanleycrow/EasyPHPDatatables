@@ -10,12 +10,12 @@ class DatatableConfig
         return $_ENV['DT_LANGUAGE'] ?? 'en';
     }
 
-    public static function getDefaultPageLength(): int
+    public static function getDefaultRowsPerPage(): int
     {
         return $_ENV['DT_PAGE_LENGTH'] ?? 25;
     }
 
-    public static function getDefaultClass(): string
+    public static function getDefaultCssClasses(): string
     {
         return $_ENV['DT_TABLE_CLASSES'] ?? 'table';
     }

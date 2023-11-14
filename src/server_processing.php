@@ -1,7 +1,8 @@
 <?php
 
-use hstanleycrow\EasyPHPDatatables\CallSchema;
+use hstanleycrow\EasyPHPDatatables\SSP;
 use hstanleycrow\EasyPHPDatatables\DatabaseConnector;
+use hstanleycrow\EasyPHPDatatables\CallDatatableDefinition;
 
 /*
  * DataTables example server-side processing script.
@@ -24,21 +25,24 @@ use hstanleycrow\EasyPHPDatatables\DatabaseConnector;
 require_once '../vendor/autoload.php';
 
 $dbConnector = new DatabaseConnector();
-$schema = filter_input(INPUT_GET, 'schema', FILTER_UNSAFE_RAW);
-if (empty($schema) || !is_string($schema)) {
-    throw new Exception('Schema is required');
+$dtDefinition = filter_input(INPUT_GET, 'dtDefinition', FILTER_UNSAFE_RAW);
+if (empty($dtDefinition) || !is_string($dtDefinition)) {
+    throw new Exception('Datatable Definition is required');
 }
 /*$namespace = $_ENV['DT_SCHEMAS_NAMESPACE'] . '\\' ?? 'hstanleycrow\DatatableSchemas\\';
 $schema = $namespace . ucwords($schema) . 'Datatable';
 $schemaInstance = new $schema();*/
-$schemaInstance = (new CallSchema())->getInstance($schema);
+$definitionClassInstance = (new CallDatatableDefinition())->getInstance($dtDefinition);
 $sql_details = $dbConnector->getConnectionDetails();
-$table = $schemaInstance->getTable();
-$primaryKey = $schemaInstance->getPrimaryKey();
+$table = $definitionClassInstance->getTable();
+$primaryKey = $definitionClassInstance->getPrimaryKey();
 
-$columns = $schemaInstance->getColumns();
-require('ssp.class.php');
+$columns = $definitionClassInstance->getDTColumnsDefinitions();
+$joinQuery = $definitionClassInstance->getJoinQuery() ?? null;
+$extraCondition = $definitionClassInstance->getExtraCondition() ?? null;
+#require('ssp.class.php');
+#require('ssp.php');
 
 echo json_encode(
-    SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns)
+    SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $extraCondition)
 );

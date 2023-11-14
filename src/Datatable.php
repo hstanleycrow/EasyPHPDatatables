@@ -4,22 +4,21 @@ namespace hstanleycrow\EasyPHPDatatables;
 
 class Datatable
 {
-    protected string $schema;
-    protected string $table = "";
+    protected string $DTDefinition;
     private string $tableHeader = "";
-    protected string $id = "list";
-    protected string $class = "";
+    protected string $tableId = "list";
+    protected string $CssClasses = "";
     protected array $columnNames = [];
     protected string $language = "en";
-    protected int $pageLength = 25;
+    protected int $rowsPerPage = 25;
     protected string $loadingErrorMessage = '';
 
-    public function __construct(string $schema)
+    public function __construct(string $DTDefinition)
     {
-        $this->schema = $schema;
+        $this->DTDefinition = $DTDefinition;
         $this->language = $this->getDefaultLanguage();
-        $this->pageLength = $this->getDefaultPageLength();
-        $this->class = $this->getDefaultClass();
+        $this->rowsPerPage = $this->getDefaultRowsPerPage();
+        $this->CssClasses = $this->getDefaultCssClasses();
         $this->loadingErrorMessage = $this->getDefaultErrorMessage();
         $this->setColumnNames();
     }
@@ -28,14 +27,14 @@ class Datatable
         return DatatableConfig::getDefaultLanguage();
     }
 
-    private function getDefaultPageLength(): int
+    private function getDefaultRowsPerPage(): int
     {
-        return DatatableConfig::getDefaultPageLength();
+        return DatatableConfig::getDefaultRowsPerPage();
     }
 
-    private function getDefaultClass(): string
+    private function getDefaultCssClasses(): string
     {
-        return DatatableConfig::getDefaultClass();
+        return DatatableConfig::getDefaultCssClasses();
     }
 
     private function getDefaultErrorMessage(): string
@@ -43,34 +42,29 @@ class Datatable
         return DatatableConfig::getDefaultErrorMessage();
     }
 
-    /*public function setColumnNames(array $columnNames): self
+    public function addCssClass(string $class): self
     {
-        $this->columnNames = $columnNames;
-        return $this;
-    }*/
-    public function addClass(string $class): self
-    {
-        $this->class .= $class;
+        $this->CssClasses .= $class;
         return $this;
     }
-    public function setId(string $id): self
+    public function setTableId(string $tableId): self
     {
-        $this->id = $id;
+        $this->tableId = $tableId;
         return $this;
     }
-    public function setLanguage(string $language): self
+    public function setDTLanguage(string $language): self
     {
         $this->language = $language;
         return $this;
     }
-    public function setPageLength(int $pageLength = 25): self
+    public function setDTRowsPerPage(int $rowsPerPage = 25): self
     {
-        $this->pageLength = $pageLength;
+        $this->rowsPerPage = $rowsPerPage;
         return $this;
     }
     public function render(): string
     {
-        $table = '<table id="' . $this->id . '" class="' . $this->class . '">';
+        $table = '<table id="' . $this->tableId . '" class="' . $this->CssClasses . '">';
         $table .= $this->renderHeader();
         $table .= '</table>';
         return $table;
@@ -88,7 +82,7 @@ class Datatable
     }
     public function autoLoadDatatableJS(): void
     {
-        Resources::autoLoadDatatableJS($this->id, $this->schema, $this->language, $this->pageLength, $this->loadingErrorMessage);
+        Resources::autoLoadDatatableJS($this->tableId, $this->DTDefinition, $this->language, $this->rowsPerPage, $this->loadingErrorMessage);
     }
     public function getCSSResources(): void
     {
@@ -100,7 +94,7 @@ class Datatable
     }
     private function setColumnNames(): void
     {
-        $schemaInstance = (new CallSchema())->getInstance($this->schema);
-        $this->columnNames = $schemaInstance->getColumnsName();
+        $definitionClassInstance = (new CallDatatableDefinition())->getInstance($this->DTDefinition);
+        $this->columnNames = $definitionClassInstance->getColumnsName();
     }
 }

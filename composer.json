@@ -30,7 +30,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "hstanleycrow\\DatatableSchemas\\": "DatatableSchemas/"
+            "hstanleycrow\\DatatablesDefinitions\\": "DatatablesDefinitions/"
         },
         "files": [
             "src/helpers.php"

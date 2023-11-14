@@ -86,16 +86,16 @@ class Resources
         }
     }
 
-    public static function autoLoadDatatableJS(string $id, string $schema, string $language, int $pageLength, string $errorMessage): void
+    public static function autoLoadDatatableJS(string $id, string $dtDefinition, string $language, int $rowsPerPage, string $errorMessage): void
     {
         echo "<script>
         $.fn.dataTable.ext.errMode = () => alert('" . $errorMessage . "');
         new DataTable('#" . $id . "', {
-            ajax: 'src/server_processing.php?schema=" . $schema . "',"
+            ajax: 'src/server_processing.php?dtDefinition=" . $dtDefinition . "',"
             . Language::setLanguage($language)->autoLoadLanguageURL() .
             "processing: true,
             serverSide: true,
-            'pageLength': " . $pageLength . "
+            'pageLength': " . $rowsPerPage . "
         });
     </script>";
     }
