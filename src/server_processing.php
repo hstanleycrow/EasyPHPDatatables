@@ -1,4 +1,8 @@
 <?php
+function getPathToVendorFolder(): string
+{
+    return $_ENV['DT_PATH_TO_AUTOLOAD_ON_SERVER_PROCESSING_FILE'] ?? "../vendor/";
+}
 
 use hstanleycrow\EasyPHPDatatables\SSP;
 use hstanleycrow\EasyPHPDatatables\DatabaseConnector;
@@ -22,16 +26,15 @@ use hstanleycrow\EasyPHPDatatables\CallDatatableDefinition;
  * Easy set variables
  */
 
-require_once '../vendor/autoload.php';
+$autoloadPath = getPathToVendorFolder();
+#echo $autoloadPath;
+require_once getPathToVendorFolder() . 'autoload.php';
 
 $dbConnector = new DatabaseConnector();
 $dtDefinition = filter_input(INPUT_GET, 'dtDefinition', FILTER_UNSAFE_RAW);
 if (empty($dtDefinition) || !is_string($dtDefinition)) {
     throw new Exception('Datatable Definition is required');
 }
-/*$namespace = $_ENV['DT_SCHEMAS_NAMESPACE'] . '\\' ?? 'hstanleycrow\DatatableSchemas\\';
-$schema = $namespace . ucwords($schema) . 'Datatable';
-$schemaInstance = new $schema();*/
 $definitionClassInstance = (new CallDatatableDefinition())->getInstance($dtDefinition);
 $sql_details = $dbConnector->getConnectionDetails();
 $table = $definitionClassInstance->getTable();

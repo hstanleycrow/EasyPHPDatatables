@@ -88,15 +88,23 @@ class Resources
 
     public static function autoLoadDatatableJS(string $id, string $dtDefinition, string $language, int $rowsPerPage, string $errorMessage): void
     {
+        $ajax_url = self::getPathToServerProcessingFile() . '?dtDefinition=' . $dtDefinition;
         echo "<script>
         $.fn.dataTable.ext.errMode = () => alert('" . $errorMessage . "');
         new DataTable('#" . $id . "', {
-            ajax: 'src/server_processing.php?dtDefinition=" . $dtDefinition . "',"
+            ajax: '" . $ajax_url . "',"
             . Language::setLanguage($language)->autoLoadLanguageURL() .
             "processing: true,
             serverSide: true,
             'pageLength': " . $rowsPerPage . "
         });
     </script>";
+    }
+
+    private static function getPathToServerProcessingFile(): string
+    {
+        $base_url = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'];
+        $pathToServerProcessing = $_ENV['DT_PATH_TO_SERVER_PROCESSING_FILE'] ?? "";
+        return $base_url . $pathToServerProcessing . 'src/server_processing.php';
     }
 }

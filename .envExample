@@ -6,7 +6,9 @@ DATABASE_PORT = "3306"
 DATABASE_CHARSET = "SET NAMES 'utf8'"
 
 #DATATABLES CONFIG
-DT_SCHEMAS_NAMESPACE = 'namespace_for_definitions'
+DT_DEFINITIONS_NAMESPACE = 'namespace_for_definitions'
+DT_PATH_TO_SERVER_PROCESSING_FILE = 'path to server_processing.php in your project'
+DT_PATH_TO_AUTOLOAD_ON_SERVER_PROCESSING_FILE = '../vendor/'
 DT_DATE_FORMAT = 'd/m/Y'
 DT_DATETIME_FORMAT = 'd/m/Y H:i:s'
 DT_TIME_FORMAT = 'H:i:s'

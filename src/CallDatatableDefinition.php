@@ -27,6 +27,6 @@ class CallDatatableDefinition
     }
     private function getNamespace(): string
     {
-        return $_ENV['DT_SCHEMAS_NAMESPACE'] . '\\' ?? 'hstanleycrow\DatatablesDefinitions\\';
+        return $_ENV['DT_DEFINITIONS_NAMESPACE'] . '\\' ?? 'hstanleycrow\DatatablesDefinitions\\';
     }
 }
