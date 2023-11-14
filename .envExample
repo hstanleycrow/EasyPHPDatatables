@@ -1,0 +1,23 @@
+DATABASE_HOST = "127.0.0.1"
+DATABASE_NAME = "db_name"
+DATABASE_USERNAME = "your_username"
+DATABASE_PASSWORD = "your_password"
+DATABASE_PORT = "3306"
+DATABASE_CHARSET = "SET NAMES 'utf8'"
+
+#DATATABLES CONFIG
+DT_SCHEMAS_NAMESPACE = 'namespace_for_definitions'
+DT_DATE_FORMAT = 'd/m/Y'
+DT_DATETIME_FORMAT = 'd/m/Y H:i:s'
+DT_TIME_FORMAT = 'H:i:s'
+DT_MONEY_SYMBOL = ""
+DT_DECIMAL_SEPARATOR = "."
+DT_THOUSAND_SEPARATOR = ","
+DT_DECIMALS = 2
+DT_PAGE_LENGTH = 25
+DT_LANGUAGE = 'es'
+DT_PERCENTAGE_POS = 'right'
+DT_MAILTO_CLASSES = 'btn btn-link'
+DT_IMAGE_CLASSES = 'btn btn-link'
+DT_TABLE_CLASSES = 'table table-bordered table-hover table-striped table-light'
+DT_ERROR_MESSAGE = 'Error al cargar los datos de la tabla. Por favor, actualice. Si el error persiste comuniquese con el desarrollador.'
