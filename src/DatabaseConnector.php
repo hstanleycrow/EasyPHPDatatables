@@ -30,7 +30,7 @@ class DatabaseConnector
     {
         if (!class_exists('Dotenv\Dotenv'))
             return;
-        Dotenv::createImmutable(__DIR__ . '/../')->load();
+        Dotenv::createImmutable($this->getPathToEnvFile())->load();
         if (isset($_ENV["DATABASE_HOST"])) {
             $this->config = [
                 'host' => $_ENV["DATABASE_HOST"],
@@ -40,6 +40,26 @@ class DatabaseConnector
                 'charset' => 'utf8',
             ];
         }
+    }
+    private function getPathToEnvFile(): string
+    {
+        $envPaths = [
+            __DIR__ . '/../../../../../',
+            __DIR__ . '/../../../../',
+            __DIR__ . '/../../../',
+            __DIR__ . '/../../',
+            __DIR__ . '/../',
+        ];
+
+        $envFound = false;
+
+        foreach ($envPaths as $envPath) {
+            if (file_exists($envPath . '.env')) {
+                return $envPath;
+            }
+        }
+
+        return "";
     }
     public static function setConfigFile($configFile)
     {

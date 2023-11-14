@@ -1,7 +1,22 @@
 <?php
 function getPathToVendorFolder(): string
 {
-    return $_ENV['DT_PATH_TO_AUTOLOAD_ON_SERVER_PROCESSING_FILE'] ?? "../vendor/";
+    $autoloadPaths = [
+        __DIR__ . '/../../../../vendor/autoload.php',
+        __DIR__ . '/../../../vendor/autoload.php',
+        __DIR__ . '/../../vendor/autoload.php',
+        __DIR__ . '/../vendor/autoload.php',
+    ];
+
+    $autoloadFound = false;
+
+    foreach ($autoloadPaths as $autoloadPath) {
+        if (file_exists($autoloadPath)) {
+            return $autoloadPath;
+        }
+    }
+
+    return "";
 }
 
 use hstanleycrow\EasyPHPDatatables\SSP;
@@ -26,9 +41,9 @@ use hstanleycrow\EasyPHPDatatables\CallDatatableDefinition;
  * Easy set variables
  */
 
-$autoloadPath = getPathToVendorFolder();
+#$autoloadPath = getPathToVendorFolder();
 #echo $autoloadPath;
-require_once getPathToVendorFolder() . 'autoload.php';
+require_once getPathToVendorFolder();
 
 $dbConnector = new DatabaseConnector();
 $dtDefinition = filter_input(INPUT_GET, 'dtDefinition', FILTER_UNSAFE_RAW);
