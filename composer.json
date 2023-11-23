@@ -17,6 +17,12 @@
             "role": "Developer"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/hstanleycrow/EasyPHPWebComponents.git"
+        }
+    ],
     "require": {
         "php": "^8.0"
     },
@@ -30,14 +36,17 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "hstanleycrow\\DatatablesDefinitions\\": "DatatablesDefinitions/"
+            "hstanleycrow\\DatatablesDefinitions\\": "DatatablesDefinitions/",
+            "hstanleycrow\\Components\\": "Components/"
         },
         "files": [
             "src/helpers.php"
         ]
     },
     "require-dev": {
-        "vlucas/phpdotenv": "^5.4"
+        "vlucas/phpdotenv": "^5.4",
+        "hstanleycrow/easyphpwebcomponents": "dev-main",
+        "phpunit/phpunit": "^10.4"
     },
     "config": {
         "allow-plugins": {

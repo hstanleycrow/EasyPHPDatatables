@@ -4,5 +4,5 @@ namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
 interface IColumnFormatterGenerator
 {
-    public function generate();
+    public function generate(): callable;
 }

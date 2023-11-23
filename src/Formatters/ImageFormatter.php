@@ -4,7 +4,7 @@ namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
 class ImageFormatter implements IColumnFormatterGenerator
 {
-    public function generate()
+    public function generate(): callable
     {
         $classes = $this->getClasses();
         return function ($d, $row) use ($classes) {

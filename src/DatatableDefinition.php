@@ -4,80 +4,86 @@ namespace hstanleycrow\EasyPHPDatatables;
 
 use hstanleycrow\EasyPHPDatatables\Formatters\ColumnFormatter;
 
+/**
+ * Definición de una tabla DataTable.
+ * 
+ * Representa la estructura y configuración de una tabla DataTable, definiendo columnas y botones.
+ * Utiliza una instancia de DefinitionGeneratorInterface para generar definiciones de columnas dinámicamente.
+ */
+
 class DatatableDefinition
 {
-    protected array $definitionColumnsList = [];
-    protected string $joinQuery;
-    protected string $extraCondition;
-    protected string $dbTable;
-    protected string $primaryKey;
-    protected static int $addedColumns = 0;
-    protected array $columnsName = [];
-    protected ColumnFormatter $formatter;
 
-    public function __construct(string $dbTable, string $primaryKey)
-    {
-        $this->dbTable = $dbTable;
-        $this->primaryKey = $primaryKey;
-        $this->formatter = new ColumnFormatter();
+    public function __construct(
+        protected DatatableDBTableDetails $dbTableDetails,
+        protected ColumnFormatter $formatter,
+        protected DatatableDefinitionBuilder $builder,
+        string $model
+    ) {
     }
 
-    public function addColumn(string $dbField, string $field, ?string $as = null, string $format  = 'text'): self
+    public function buildDefinition(object $definitionClassInstance, array $dtDisabledIdButtons): void
     {
-        $formatClass  = 'hstanleycrow\EasyPHPDatatables\Formatters\\' . ucwords($format) . 'Formatter';
-        if (!$this->isValidFormatter($formatClass)) {
-            throw new \InvalidArgumentException("Format '$format' is not supported.");
-        }
-        $columnFormat = (new $formatClass())->generate();
-        $column = [
-            'db' => $dbField,
-            'field' => $field,
-            'dt' => self::$addedColumns,
-        ];
-        if (!empty($as)) {
-            $column['as'] = $as;
-        }
-        if (!empty($columnFormat)) {
-            $column['formatter'] = $columnFormat;
-        }
+        $this
+            ->setJoinQuery($definitionClassInstance->getJoinQuery())
+            ->setExtraCondition($definitionClassInstance->getExtraCondition());
 
-        $this->definitionColumnsList[] = $column;
-
-        self::$addedColumns++;
-
-        return $this;
-    }
-    private function isValidFormatter($formatClass): bool
-    {
-        return class_exists($formatClass);
+        $this->builder
+            ->setDisabledIdButtons($dtDisabledIdButtons)
+            ->addDataColumns($definitionClassInstance->getColumns())
+            ->addActionButtons($definitionClassInstance->getButtons());
     }
 
-    public function getTable(): string
-    {
-        return $this->dbTable;
-    }
+
     public function getColumnsName(): array
     {
-        return $this->columnsName;
+        return $this->builder->getColumnsName();
+    }
+
+    public function getDTColumnsDefinitions(): array
+    {
+        return $this->builder->getDTColumnsDefinitions();
+    }
+    public function getTable(): string
+    {
+        return $this->dbTableDetails->getTable();
     }
     public function getPrimaryKey(): string
     {
-        return $this->primaryKey;
-    }
-    public function getDTColumnsDefinitions(): array
-    {
-        return $this->definitionColumnsList;
+        return $this->dbTableDetails->getPrimaryKey();
     }
     public function getJoinQuery(): string
     {
-        return $this->joinQuery;
+        return $this->dbTableDetails->getJoinQuery();
     }
-
     /**
      * Get the value of extraCondition
      */
     public function getExtraCondition()
     {
-        return $this->extraCondition;
+        return $this->dbTableDetails->getExtraCondition();
+    }
+    /**
+     * Set the value of joinQuery
+     *
+     * @return  self
+     */
+    public function setJoinQuery($joinQuery)
+    {
+        $this->dbTableDetails->setJoinQuery($joinQuery);
+
+        return $this;
+    }
+
+    /**
+     * Set the value of extraCondition
+     *
+     * @return  self
+     */
+    public function setExtraCondition($extraCondition)
+    {
+        $this->dbTableDetails->setExtraCondition($extraCondition);
+
+        return $this;
     }
 }

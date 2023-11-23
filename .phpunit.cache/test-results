@@ -1,0 +1,1 @@
+{"version":1,"defects":{"DatatableTest::testCreateDatatable":5,"DatatableTest::testRenderDatatable":5},"times":{"DatatableTest::testCreateDatatable":0.004,"DatatableTest::testRenderDatatable":0.034}}

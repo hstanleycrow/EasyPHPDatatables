@@ -4,8 +4,10 @@ namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
 class TextFormatter implements IColumnFormatterGenerator
 {
-    public function generate()
+    public function generate(): callable
     {
-        return null;
+        return function ($data, $row) {
+            return $data;
+        };
     }
 }

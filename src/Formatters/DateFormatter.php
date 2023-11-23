@@ -4,10 +4,10 @@ namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
 class DateFormatter implements IColumnFormatterGenerator
 {
-    public function generate()
+    public function generate(): callable
     {
-        return function ($data, $row) {
-            $dateFormat = $_ENV['DT_DATE_FORMAT'] ?? 'd/m/Y';
+        $dateFormat = $_ENV['DT_DATE_FORMAT'] ?? 'd/m/Y';
+        return function ($data, $row) use ($dateFormat) {
             return date($dateFormat, strtotime($data));
         };
     }

@@ -4,7 +4,7 @@ namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
 class DecimalFormatter implements IColumnFormatterGenerator
 {
-    public function generate()
+    public function generate(): callable
     {
         return function ($data, $row) {
             $decimalSeparator = NumberFormatConfig::getDecimalSeparator();

@@ -21,7 +21,7 @@ function getPathToVendorFolder(): string
 
 use hstanleycrow\EasyPHPDatatables\SSP;
 use hstanleycrow\EasyPHPDatatables\DatabaseConnector;
-use hstanleycrow\EasyPHPDatatables\CallDatatableDefinition;
+use hstanleycrow\EasyPHPDatatables\DefinitionGenerator;
 
 /*
  * DataTables example server-side processing script.
@@ -47,10 +47,13 @@ require_once getPathToVendorFolder();
 
 $dbConnector = new DatabaseConnector();
 $dtDefinition = filter_input(INPUT_GET, 'dtDefinition', FILTER_UNSAFE_RAW);
+$dtDisabledIdButtons = filter_input(INPUT_GET, 'db', FILTER_UNSAFE_RAW);
 if (empty($dtDefinition) || !is_string($dtDefinition)) {
     throw new Exception('Datatable Definition is required');
 }
-$definitionClassInstance = (new CallDatatableDefinition())->getInstance($dtDefinition);
+$dtDisabledIdButtons = $dtDisabledIdButtons ? explode(',', $dtDisabledIdButtons) : [];
+$definitionClassInstance = (new DefinitionGenerator())->generate($dtDefinition, $dtDisabledIdButtons);
+
 $sql_details = $dbConnector->getConnectionDetails();
 $table = $definitionClassInstance->getTable();
 $primaryKey = $definitionClassInstance->getPrimaryKey();

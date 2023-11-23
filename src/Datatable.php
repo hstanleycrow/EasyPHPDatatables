@@ -2,69 +2,27 @@
 
 namespace hstanleycrow\EasyPHPDatatables;
 
+use hstanleycrow\EasyPHPDatatables\Resources\Resources;
+
 class Datatable
 {
     protected string $DTDefinition;
-    private string $tableHeader = "";
-    protected string $tableId = "list";
-    protected string $CssClasses = "";
-    protected array $columnNames = [];
-    protected string $language = "en";
-    protected int $rowsPerPage = 25;
-    protected string $loadingErrorMessage = '';
+    private string $tableHeader = '';
 
-    public function __construct(string $DTDefinition)
+    protected DatatableProps $props;
+    protected DatatableOptions $options;
+    protected Resources $resources;
+
+    public function __construct(string $DTDefinition, ?array $dtDisabledIdButtons = [])
     {
         $this->DTDefinition = $DTDefinition;
-        $this->language = $this->getDefaultLanguage();
-        $this->rowsPerPage = $this->getDefaultRowsPerPage();
-        $this->CssClasses = $this->getDefaultCssClasses();
-        $this->loadingErrorMessage = $this->getDefaultErrorMessage();
-        $this->setColumnNames();
-    }
-    private function getDefaultLanguage(): string
-    {
-        return DatatableConfig::getDefaultLanguage();
-    }
-
-    private function getDefaultRowsPerPage(): int
-    {
-        return DatatableConfig::getDefaultRowsPerPage();
-    }
-
-    private function getDefaultCssClasses(): string
-    {
-        return DatatableConfig::getDefaultCssClasses();
-    }
-
-    private function getDefaultErrorMessage(): string
-    {
-        return DatatableConfig::getDefaultErrorMessage();
-    }
-
-    public function addCssClass(string $class): self
-    {
-        $this->CssClasses .= $class;
-        return $this;
-    }
-    public function setTableId(string $tableId): self
-    {
-        $this->tableId = $tableId;
-        return $this;
-    }
-    public function setDTLanguage(string $language): self
-    {
-        $this->language = $language;
-        return $this;
-    }
-    public function setDTRowsPerPage(int $rowsPerPage = 25): self
-    {
-        $this->rowsPerPage = $rowsPerPage;
-        return $this;
+        $this->props = new DatatableProps($DTDefinition, $dtDisabledIdButtons);
+        $this->options = new DatatableOptions($DTDefinition);
+        $this->resources = new Resources();
     }
     public function render(): string
     {
-        $table = '<table id="' . $this->tableId . '" class="' . $this->CssClasses . '">';
+        $table = '<table id="' . $this->props->getTableId() . '" class="' . $this->props->getCssClasses() . '">';
         $table .= $this->renderHeader();
         $table .= '</table>';
         return $table;
@@ -73,28 +31,52 @@ class Datatable
     {
         $this->tableHeader .= '<thead>';
         $this->tableHeader .= '<tr>';
-        foreach ($this->columnNames as $columnName) :
+        foreach ($this->props->getColumnNames() as $columnName) :
             $this->tableHeader .= '<th>' . $columnName . '</th>';
         endforeach;
         $this->tableHeader .= '</tr>';
         $this->tableHeader .= '</thead>';
         return $this->tableHeader;
     }
-    public function autoLoadDatatableJS(): void
+    public function autoLoadDatatableJS(): string
     {
-        Resources::autoLoadDatatableJS($this->tableId, $this->DTDefinition, $this->language, $this->rowsPerPage, $this->loadingErrorMessage);
+        return $this->resources->autoLoadDatatableJS(
+            $this->DTDefinition,
+            $this->props,
+            $this->options
+        );
     }
-    public function getCSSResources(): void
+
+    public function autoLoadCssResources(): string
     {
-        Resources::autoLoadCssResources();
+        return $this->resources->autoLoadCssResources();
     }
-    public function getJSResources(): void
+    public function autoLoadJsResources(): string
     {
-        Resources::autoLoadJsResources();
+        return $this->resources->autoLoadJsResources();
     }
-    private function setColumnNames(): void
+    public function addCssClass(string $class): self
     {
-        $definitionClassInstance = (new CallDatatableDefinition())->getInstance($this->DTDefinition);
-        $this->columnNames = $definitionClassInstance->getColumnsName();
+        $this->props->addCssClass($class);
+        return $this;
+    }
+    public function setTableId(string $tableId): self
+    {
+        $this->props->setTableId($tableId);
+        return $this;
+    }
+    public function setDTLanguage(string $language): self
+    {
+        $this->options->setDTLanguage($language);
+        return $this;
+    }
+    public function setDTRowsPerPage(int $rowsPerPage = 25): self
+    {
+        $this->options->setDTRowsPerPage($rowsPerPage);
+        return $this;
+    }
+    public function setFramework(string $framework): void
+    {
+        $this->resources->setFramework($framework);
     }
 }

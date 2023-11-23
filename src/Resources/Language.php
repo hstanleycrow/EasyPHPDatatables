@@ -1,6 +1,6 @@
 <?php
 
-namespace hstanleycrow\EasyPHPDatatables;
+namespace hstanleycrow\EasyPHPDatatables\Resources;
 
 class Language
 {
