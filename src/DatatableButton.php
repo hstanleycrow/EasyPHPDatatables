@@ -15,7 +15,7 @@ class DatatableButton
     {
         foreach ($buttons as $button) {
             if (!$this->datatableColumn->isButtonDisabled($button['button_id'], $dtDisabledIdButtons)) {
-                $columnFormat = (new DatatableButtonFormatter($this->model, $button['path'], $button['buttonText'], $button['buttonClass']))->generate();
+                $columnFormat = (new DatatableButtonFormatter($this->model, $button['path'], $button['buttonText'], $button['buttonClass'] ?? null))->generate();
 
                 $this->addActionButtonToColumnList(
                     $button['db_name'],
