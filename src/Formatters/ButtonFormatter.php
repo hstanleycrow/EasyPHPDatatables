@@ -21,7 +21,7 @@ class ButtonFormatter implements IColumnFormatterGenerator
         return function ($d, $row) use ($href) {
             $href .=  $d . '/"';
 
-            if ($this->buttonClass) {
+            if ($this->buttonClass && class_exists($this->buttonClass)) {
                 return (new $this->buttonClass($href))->render();
             }
 
