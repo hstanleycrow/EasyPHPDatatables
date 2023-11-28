@@ -157,7 +157,7 @@ class SSP
                 $column = $columns[$columnIdx];
 
                 if ($requestColumn['searchable'] == 'true') {
-                    $binding = SSP::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                    $binding = SSP::bind($bindings, '%' . $str . '%', \PDO::PARAM_STR);
                     $globalSearch[] = ($isJoin) ? $column['db'] . " LIKE " . $binding : "`" . $column['db'] . "` LIKE " . $binding;
                 }
             }
@@ -175,7 +175,7 @@ class SSP
                 $requestColumn['searchable'] == 'true' &&
                 $str != ''
             ) {
-                $binding = SSP::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                $binding = SSP::bind($bindings, '%' . $str . '%', \PDO::PARAM_STR);
                 $columnSearch[] = ($isJoin) ? $column['db'] . " LIKE " . $binding : "`" . $column['db'] . "` LIKE " . $binding;
             }
         }
@@ -354,7 +354,7 @@ class SSP
         // Execute
         try {
             $stmt->execute();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             SSP::fatal("An SQL error occurred: " . $e->getMessage());
         }
 

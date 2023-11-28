@@ -1,5 +1,6 @@
 {
     "name": "hstanleycrow/easyphpdatatables",
+    "version": "1.0.1",
     "description": "Free PHP library web component for datatables and PHP",
     "keywords": [
         "php",
