@@ -13,7 +13,7 @@ class MoneyFormatter implements IColumnFormatterGenerator
             $decimals = NumberFormatConfig::getDecimals();
 
             return $moneySymbol .
-                number_format($data, $decimals, $thousandsSeparator, $decimalSeparator);
+                number_format($data, $decimals, $decimalSeparator, $thousandsSeparator);
         };
     }
 
