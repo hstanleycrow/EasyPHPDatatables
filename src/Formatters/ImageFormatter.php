@@ -8,7 +8,7 @@ class ImageFormatter implements IColumnFormatterGenerator
     {
         $classes = $this->getClasses();
         return function ($d, $row) use ($classes) {
-            return '<img src="' . $d . '" class="' . $classes . '" width=35/>';
+            return '<img src="' . $d . '" class="' . $classes . '" width="35" />';
         };
     }
     private function getClasses()
