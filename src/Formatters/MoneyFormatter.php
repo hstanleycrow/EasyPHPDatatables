@@ -2,23 +2,20 @@
 
 namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
+use hstanleycrow\EasyPHPDatatables\Config;
+
 class MoneyFormatter implements IColumnFormatterGenerator
 {
     public function generate(): callable
     {
-        return function ($data, $row) {
-            $moneySymbol = $this->getMoneySymbol();
-            $decimalSeparator = NumberFormatConfig::getDecimalSeparator();
-            $thousandsSeparator = NumberFormatConfig::getThousandsSeparator();
-            $decimals = NumberFormatConfig::getDecimals();
-
-            return $moneySymbol .
-                number_format($data, $decimals, $decimalSeparator, $thousandsSeparator);
+        $config = Config::instance();
+        return function ($data, $row) use ($config) {
+            return $config->getMoneySymbol() . number_format(
+                (float) $data,
+                $config->getDecimals(),
+                $config->getDecimalSeparator(),
+                $config->getThousandSeparator()
+            );
         };
-    }
-
-    private function getMoneySymbol()
-    {
-        return $_ENV['DT_MONEY_SYMBOL'] ?? '$';
     }
 }

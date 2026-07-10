@@ -15,7 +15,7 @@ class DatatableProps
         $this->DTDefinition = $DTDefinition;
         $this->dtDisabledIdButtons = $dtDisabledIdButtons;
         $this->CssClasses = $this->getDefaultCssClasses();
-        $this->setColumnNames($DTDefinition);
+        $this->setColumnNames();
     }
     public function setColumnNames(): void
     {
@@ -29,7 +29,7 @@ class DatatableProps
     }
     private function getDefaultCssClasses(): string
     {
-        return DatatableConfig::getDefaultCssClasses();
+        return Config::instance()->getTableClasses();
     }
 
     public function addCssClass(string $class): self

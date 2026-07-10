@@ -2,24 +2,23 @@
 
 namespace hstanleycrow\EasyPHPDatatables;
 
-use hstanleycrow\EasyPHPDatatables\Resources\Resources;
-
 class DatatableButton
 {
-
-    public function __construct(private DatatableColumn $datatableColumn, private string $model, private array $dtDisabledIdButtons = [])
+    public function __construct(private DatatableColumn $datatableColumn, private string $model)
     {
     }
 
     public function addActionButtons(array $buttons, array $dtDisabledIdButtons): self
     {
+        $buttons = array_map([ActionButton::class, 'normalize'], $buttons);
+
         foreach ($buttons as $button) {
-            if (!$this->datatableColumn->isButtonDisabled($button['button_id'], $dtDisabledIdButtons)) {
-                $columnFormat = (new DatatableButtonFormatter($this->model, $button['path'], $button['buttonText'], $button['buttonClass'] ?? null))->generate();
+            if (!$this->datatableColumn->isButtonDisabled($button->buttonId, $dtDisabledIdButtons)) {
+                $columnFormat = (new DatatableButtonFormatter($this->model, $button->path, $button->buttonText, $button->buttonClass))->generate();
 
                 $this->addActionButtonToColumnList(
-                    $button['db_name'],
-                    $button['field'],
+                    $button->dbName,
+                    $button->field,
                     $columnFormat
                 );
             }
@@ -34,12 +33,11 @@ class DatatableButton
         $column = [
             'db' => $dbField,
             'field' => $field,
-            'dt' => DatatableHelper::$addedColumns,
+            'dt' => $this->datatableColumn->reserveColumnIndex(),
             'formatter' => $columnFormat,
         ];
 
         $this->datatableColumn->addDefinitionToColumnsList($column);
-        DatatableHelper::incrementColumnsCount();
         return $this;
     }
 }

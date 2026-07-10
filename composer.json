@@ -1,12 +1,13 @@
 {
     "name": "hstanleycrow/easyphpdatatables",
-    "version": "1.0.5",
-    "description": "Free PHP library web component for datatables and PHP",
+    "description": "Standalone PHP server-side processing engine for DataTables.net: query, paginate, filter and order from a single PHP table definition.",
     "keywords": [
         "php",
-        "components",
         "datatables",
-        "web components"
+        "server-side",
+        "pagination",
+        "pdo",
+        "mysql"
     ],
     "license": "MIT",
     "homepage": "https://github.com/hstanleycrow/EasyPHPDatatables",
@@ -18,31 +19,22 @@
             "role": "Developer"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/hstanleycrow/EasyPHPWebComponents.git"
-        }
-    ],
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "ext-pdo": "*",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
             "hstanleycrow\\EasyPHPDatatables\\": "src/"
-        },
-        "files": [
-            "src/config.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
+            "hstanleycrow\\EasyPHPDatatables\\Tests\\Fixtures\\": "tests/Fixtures/",
             "hstanleycrow\\DatatablesDefinitions\\": "DatatablesDefinitions/",
             "hstanleycrow\\Components\\": "Components/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+        }
     },
     "require-dev": {
         "vlucas/phpdotenv": "^5.6",

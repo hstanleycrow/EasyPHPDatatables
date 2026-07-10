@@ -1,14 +1,27 @@
 vendor
 .env
 composer.lock
+.phpunit.cache
 index.php
 /src/helpers.php
 src/DatatableDefinition.old.php
 src/ssp.class.php
-examples.php
 manual_test.php
 prepros.config
 dbconfig.php
 DatatablesDefinitions/
 Components/
 test.http
+commit-comment.txt
+
+# IDE / editor
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# PHPUnit (legacy cache filename)
+.phpunit.result.cache

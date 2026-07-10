@@ -2,32 +2,24 @@
 
 namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
+use hstanleycrow\EasyPHPDatatables\Config;
+
 class PercentageFormatter implements IColumnFormatterGenerator
 {
     public function generate(): callable
     {
-        return function ($data, $row) {
-            $percentagePosition = $this->getPercentagePosition();
-            $decimalSeparator = NumberFormatConfig::getDecimalSeparator();
-            $thousandsSeparator = NumberFormatConfig::getThousandsSeparator();
-            $decimals = NumberFormatConfig::getDecimals();
-
+        $config = Config::instance();
+        return function ($data, $row) use ($config) {
             $formattedData = number_format(
-                $data,
-                $decimals,
-                $thousandsSeparator,
-                $decimalSeparator
+                (float) $data,
+                $config->getDecimals(),
+                $config->getDecimalSeparator(),
+                $config->getThousandSeparator()
             );
 
-            if ($percentagePosition == 'left') {
-                return '%' . $formattedData;
-            } else {
-                return $formattedData . '%';
-            }
+            return $config->getPercentagePosition() === 'left'
+                ? '%' . $formattedData
+                : $formattedData . '%';
         };
-    }
-    private function getPercentagePosition()
-    {
-        return $_ENV['DT_PERCENTAGE_POS'] ?? 'right';
     }
 }

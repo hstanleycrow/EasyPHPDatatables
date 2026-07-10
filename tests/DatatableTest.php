@@ -1,44 +1,53 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Dotenv\Dotenv;
+use PHPUnit\Framework\Attributes\CoversClass;
 use hstanleycrow\EasyPHPDatatables\Datatable;
+use hstanleycrow\EasyPHPDatatables\Config;
 
+#[CoversClass(Datatable::class)]
 class DatatableTest extends TestCase
 {
-    /**
-     * @covers Datatable::__construct
-     */
-    public function testCreateDatatable()
+    protected function setUp(): void
     {
-        // Coloca aquí el código de creación del Datatable
-        $dotEnv = Dotenv::createImmutable(__DIR__ . '/../');
-        $dotEnv->load();
-
-        $datatable = new Datatable(DTDefinition: 'user', dtDisabledIdButtons: ['delete']);
-
-        // Verifica que el objeto Datatable se haya creado correctamente
-        $this->assertInstanceOf(Datatable::class, $datatable);
-
-        // Agrega más aserciones según sea necesario
+        Config::use(new Config([
+            'definitions_namespace' => 'hstanleycrow\\EasyPHPDatatables\\Tests\\Fixtures',
+        ]));
     }
-    /**
-     * @covers Datatable::render
-     */
-    public function testRenderDatatable()
+
+    protected function tearDown(): void
     {
-        // Configurar el entorno necesario para la prueba
-        $dotEnv = Dotenv::createImmutable(__DIR__ . '/../');
-        $dotEnv->load();
+        Config::reset();
+    }
 
-        // Instanciar la clase Datatable
-        $datatable = new Datatable(DTDefinition: 'user', dtDisabledIdButtons: ['delete']);
+    public function testItBuildsForADefinition(): void
+    {
+        $this->assertInstanceOf(Datatable::class, new Datatable('product'));
+    }
 
-        // Llamar al método que quieres probar
-        $renderedOutput = $datatable->render();
+    public function testRenderProducesTableMarkup(): void
+    {
+        $html = (new Datatable('product'))->setTableId('products')->render();
 
-        // Realizar afirmaciones para verificar el resultado
-        $this->assertStringContainsString('<table', $renderedOutput);
-        $this->assertStringContainsString('</table>', $renderedOutput);
+        $this->assertStringContainsString('<table id="products"', $html);
+        $this->assertStringContainsString('</table>', $html);
+        $this->assertStringContainsString('Name', $html);
+    }
+
+    public function testAutoLoadDatatableJsRequiresAjaxUrl(): void
+    {
+        $this->expectException(\Exception::class);
+        (new Datatable('product'))->autoLoadDatatableJS();
+    }
+
+    public function testAutoLoadDatatableJsUsesEndpointAndIsJsonEncoded(): void
+    {
+        $js = (new Datatable('product'))
+            ->setTableId('products')
+            ->setAjaxUrl('datatables.php')
+            ->autoLoadDatatableJS();
+
+        $this->assertStringContainsString('new DataTable("#products"', $js);
+        $this->assertStringContainsString('ajax: "datatables.php?dtDefinition=product"', $js);
     }
 }
