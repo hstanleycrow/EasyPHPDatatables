@@ -3,11 +3,10 @@ DATABASE_NAME = "db_name"
 DATABASE_USERNAME = "your_username"
 DATABASE_PASSWORD = "your_password"
 DATABASE_PORT = "3306"
-DATABASE_CHARSET = "SET NAMES 'utf8'"
+DATABASE_CHARSET = "utf8mb4"
 
 #DATATABLES CONFIG
 DT_DEFINITIONS_NAMESPACE = 'namespace_for_definitions'
-DT_PATH_TO_SERVER_PROCESSING_FILE = 'path to server_processing.php in your project'
 DT_DATE_FORMAT = 'd/m/Y'
 DT_DATETIME_FORMAT = 'd/m/Y H:i:s'
 DT_TIME_FORMAT = 'H:i:s'

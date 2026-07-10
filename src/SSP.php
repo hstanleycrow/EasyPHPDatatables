@@ -26,6 +26,39 @@ namespace hstanleycrow\EasyPHPDatatables;
 
 class SSP
 {
+    /**
+     * Handle a DataTables server-side processing AJAX request end to end.
+     *
+     * The consumer exposes a public endpoint in their own webroot that only
+     * needs to require the Composer autoloader and call this method.
+     */
+    static function handle(?\PDO $pdo = null): void
+    {
+        $dtDefinition = filter_input(INPUT_GET, 'dtDefinition', FILTER_UNSAFE_RAW);
+        $dtDisabledIdButtons = filter_input(INPUT_GET, 'db', FILTER_UNSAFE_RAW);
+
+        if (empty($dtDefinition) || !is_string($dtDefinition)) {
+            throw new \Exception('Datatable Definition is required');
+        }
+
+        $db = $pdo ?? self::sql_connect((new DatabaseConnector())->getConnectionDetails());
+
+        $dtDisabledIdButtons = $dtDisabledIdButtons ? explode(',', $dtDisabledIdButtons) : [];
+        $definition = (new DefinitionGenerator())->generate($dtDefinition, $dtDisabledIdButtons);
+
+        header('Content-Type: application/json');
+        echo json_encode(
+            self::simple(
+                $_GET,
+                $db,
+                $definition->getTable(),
+                $definition->getPrimaryKey(),
+                $definition->getDTColumnsDefinitions(),
+                $definition->getJoinQuery() ?? null,
+                $definition->getExtraCondition() ?? null
+            )
+        );
+    }
 
     /**
      * Create the data output array for the DataTables rows
@@ -221,10 +254,9 @@ class SSP
      *  @return array  Server-side processing response array
      *
      */
-    static function simple($request, $sql_details, $table, $primaryKey, $columns, $joinQuery = NULL, $extraWhere = '', $groupBy = '', $having = '')
+    static function simple(array $request, \PDO $db, string $table, string $primaryKey, array $columns, ?string $joinQuery = null, string $extraWhere = '', string $groupBy = '', string $having = ''): array
     {
         $bindings = array();
-        $db = SSP::sql_connect($sql_details);
 
         // Build the SQL query string from the request
         $limit = SSP::limit($request, $columns);
@@ -239,34 +271,24 @@ class SSP
 
         $having = ($having) ? ' HAVING ' . $having . ' ' : '';
 
-        // Main query to actually get the data
+        // Build the SELECT column list and the shared FROM/filter clause
         if ($joinQuery) {
-            $col = SSP::pluck($columns, 'db', $joinQuery);
-            $query =  "SELECT SQL_CALC_FOUND_ROWS " . implode(", ", $col) . "
-			 $joinQuery
-			 $where
-			 $extraWhere
-			 $groupBy
-       $having
-			 $order
-			 $limit";
+            $selectColumns = implode(", ", SSP::pluck($columns, 'db', $joinQuery));
+            $fromAndFilters = "$joinQuery $where $extraWhere $groupBy $having";
         } else {
-            $query =  "SELECT SQL_CALC_FOUND_ROWS `" . implode("`, `", SSP::pluck($columns, 'db')) . "`
-			 FROM `$table`
-			 $where
-			 $extraWhere
-			 $groupBy
-       $having
-			 $order
-			 $limit";
+            $selectColumns = "`" . implode("`, `", SSP::pluck($columns, 'db')) . "`";
+            $fromAndFilters = "FROM `$table` $where $extraWhere $groupBy $having";
         }
 
+        // Main query to actually get the data
+        $query = "SELECT $selectColumns $fromAndFilters $order $limit";
         $data = SSP::sql_exec($db, $bindings, $query);
 
-        // Data set length after filtering
+        // Data set length after filtering (SQL_CALC_FOUND_ROWS was removed in MySQL 8)
         $resFilterLength = SSP::sql_exec(
             $db,
-            "SELECT FOUND_ROWS()"
+            $bindings,
+            "SELECT COUNT(*) FROM (SELECT 1 $fromAndFilters) AS filtered_count"
         );
         $recordsFiltered = $resFilterLength[0][0];
 
@@ -302,16 +324,22 @@ class SSP
      *     * pass - user password
      * @return resource Database connection handle
      */
-    static function sql_connect($sql_details)
+    static function sql_connect($sql_details): \PDO
     {
+        $charset = !empty($sql_details['charset']) ? $sql_details['charset'] : 'utf8mb4';
+        $dsn = "mysql:host={$sql_details['host']}";
+        if (!empty($sql_details['port'])) {
+            $dsn .= ";port={$sql_details['port']}";
+        }
+        $dsn .= ";dbname={$sql_details['db']};charset={$charset}";
+
         try {
             $db = @new \PDO(
-                "mysql:host={$sql_details['host']};dbname={$sql_details['db']}",
+                $dsn,
                 $sql_details['user'],
                 $sql_details['pass'],
                 array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION)
             );
-            $db->query("SET NAMES 'utf8'");
         } catch (\PDOException $e) {
             SSP::fatal(
                 "An error occurred while connecting to the database. " .

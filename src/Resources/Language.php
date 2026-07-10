@@ -4,33 +4,26 @@ namespace hstanleycrow\EasyPHPDatatables\Resources;
 
 class Language
 {
-    protected static string $language = 'en';
-    protected static string $languageURL = '';
+    private const FILE_MAP = [
+        'es' => 'es-ES',
+        'es-MX' => 'es-MX',
+    ];
 
-    public static function setLanguage(string $language = 'en'): static
+    public static function inlineConfig(string $language): string
     {
-        self::$language = $language;
-        switch ($language) {
-            case 'en':
-                self::$languageURL = '';
-                break;
-            case 'es':
-                self::$languageURL = '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json';
-                break;
-            case 'es-MX':
-                self::$languageURL = '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json';
-                break;
-            default:
-                throw new \Exception('Invalid language specified');
+        if ($language === 'en') {
+            return '';
         }
-        return new static;
-    }
-    public static function autoLoadLanguageURL(): string
-    {
-        if (self::$language != 'en')
-            return "language: {
-            url: '" . self::$languageURL . "'
-        },";
-        return "";
+        if (!isset(self::FILE_MAP[$language])) {
+            throw new \Exception('Invalid language specified');
+        }
+
+        $file = __DIR__ . '/i18n/' . self::FILE_MAP[$language] . '.json';
+        $json = @file_get_contents($file);
+        if ($json === false) {
+            return '';
+        }
+
+        return 'language: ' . trim($json) . ',';
     }
 }

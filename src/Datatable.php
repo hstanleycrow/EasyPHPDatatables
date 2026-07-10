@@ -75,6 +75,11 @@ class Datatable
         $this->options->setDTRowsPerPage($rowsPerPage);
         return $this;
     }
+    public function setAjaxUrl(string $ajaxUrl): self
+    {
+        $this->options->setAjaxUrl($ajaxUrl);
+        return $this;
+    }
     public function setFramework(string $framework): void
     {
         $this->resources->setFramework($framework);

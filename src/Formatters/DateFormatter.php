@@ -2,11 +2,13 @@
 
 namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
+use hstanleycrow\EasyPHPDatatables\Config;
+
 class DateFormatter implements IColumnFormatterGenerator
 {
     public function generate(): callable
     {
-        $dateFormat = $_ENV['DT_DATE_FORMAT'] ?? 'd/m/Y';
+        $dateFormat = Config::instance()->getDateFormat();
         return function ($data, $row) use ($dateFormat) {
             return date($dateFormat, strtotime($data));
         };

@@ -7,6 +7,7 @@ class DatatableOptions
     protected string $language = "en";
     protected int $rowsPerPage = 25;
     protected string $loadingErrorMessage = '';
+    protected string $ajaxUrl = '';
 
 
     public function __construct()
@@ -25,20 +26,29 @@ class DatatableOptions
         $this->rowsPerPage = $rowsPerPage;
         return $this;
     }
+    public function setAjaxUrl(string $ajaxUrl): self
+    {
+        $this->ajaxUrl = $ajaxUrl;
+        return $this;
+    }
+    public function getAjaxUrl(): string
+    {
+        return $this->ajaxUrl;
+    }
 
     private function getDefaultLanguage(): string
     {
-        return DatatableConfig::getDefaultLanguage();
+        return Config::instance()->getLanguage();
     }
 
     private function getDefaultRowsPerPage(): int
     {
-        return DatatableConfig::getDefaultRowsPerPage();
+        return Config::instance()->getPageLength();
     }
 
     private function getDefaultErrorMessage(): string
     {
-        return DatatableConfig::getDefaultErrorMessage();
+        return Config::instance()->getErrorMessage();
     }
 
     /**

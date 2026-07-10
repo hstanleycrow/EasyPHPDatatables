@@ -34,14 +34,26 @@ class ResourcesBuilder
         DatatableProps $props,
         DatatableOptions $options
     ): string {
-        $ajax_url = self::getPathToServerProcessingFile() . '?dtDefinition=' . $dtDefinition;
+        $endpoint = $options->getAjaxUrl();
+        if ($endpoint === '') {
+            throw new \Exception(
+                'Ajax URL is required. Call setAjaxUrl() with the URL of your server-processing endpoint.'
+            );
+        }
+
+        $ajax_url = $endpoint . '?dtDefinition=' . $dtDefinition;
         if ($props->getDisabledButtons())
             $ajax_url .= '&db=' . implode(',', $props->getDisabledButtons());
+
+        $errorMessage = self::toJs($options->getLoadingErrorMessage());
+        $selector = self::toJs('#' . $props->getTableId());
+        $ajax = self::toJs($ajax_url);
+
         return "<script>
-        $.fn.dataTable.ext.errMode = () => alert('" . $options->getLoadingErrorMessage() . "');
-        new DataTable('#" . $props->getTableId() . "', {
-            ajax: '" . $ajax_url . "',"
-            . Language::setLanguage($options->getLanguage())->autoLoadLanguageURL() .
+        $.fn.dataTable.ext.errMode = () => alert(" . $errorMessage . ");
+        new DataTable(" . $selector . ", {
+            ajax: " . $ajax . ","
+            . Language::inlineConfig($options->getLanguage()) .
             "processing: true,
             serverSide: true,
             'pageLength': " . $options->getRowsPerPage() . "
@@ -49,10 +61,12 @@ class ResourcesBuilder
     </script>";
     }
 
-    private static function getPathToServerProcessingFile(): string
+    private static function toJs(string $value): string
     {
-        $base_url = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'];
-        $pathToServerProcessing = $_ENV['DT_PATH_TO_SERVER_PROCESSING_FILE'] ?? "";
-        return $base_url . $pathToServerProcessing . 'src/server_processing.php';
+        return json_encode(
+            $value,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+        );
     }
 }

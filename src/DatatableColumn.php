@@ -6,12 +6,15 @@ class DatatableColumn
 {
     protected array $definitionColumnsList = [];
     protected array $columnsName = [];
+    protected int $columnIndex = 0;
 
     public function addDataColumns(array $columns): self
     {
+        $columns = array_map([Column::class, 'normalize'], $columns);
+
         foreach ($columns as $column) {
-            $format = (new DatatableColumnFormatter($column['format']))->generate();
-            $this->addDataColumn($column['db_name'], $column['field'], $column['as'] ?? null, $format);
+            $format = (new DatatableColumnFormatter($column->format))->generate();
+            $this->addDataColumn($column->dbName, $column->field, $column->as, $format);
         }
 
         $this->buildColumnsName($columns);
@@ -21,16 +24,16 @@ class DatatableColumn
     private function buildColumnsName(array $columns): void
     {
         $this->columnsName = array_map(
-            fn ($column) => $column['view_name'],
+            fn (Column $column) => $column->viewName,
             $columns
         );
     }
-    private function addDataColumn(string $dbField, string $field, string $as = null,  ?callable $columnFormat): self
+    private function addDataColumn(string $dbField, string $field, ?string $as = null, ?callable $columnFormat = null): self
     {
         $column = [
             'db' => $dbField,
             'field' => $field,
-            'dt' => DatatableHelper::$addedColumns,
+            'dt' => $this->reserveColumnIndex(),
         ];
         if (!empty($as)) {
             $column['as'] = $as;
@@ -41,9 +44,12 @@ class DatatableColumn
 
         $this->definitionColumnsList[] = $column;
 
-        DatatableHelper::incrementColumnsCount();
-
         return $this;
+    }
+
+    public function reserveColumnIndex(): int
+    {
+        return $this->columnIndex++;
     }
 
     public function addDefinitionToColumnsList(array $column): self
@@ -55,8 +61,9 @@ class DatatableColumn
     public function addColumnsName(array $buttons, array $dtDisabledIdButtons): void
     {
         foreach ($buttons as $button) {
-            if (!$this->isButtonDisabled($button['button_id'], $dtDisabledIdButtons)) {
-                $this->columnsName[] = $button['view_name'];
+            $button = ActionButton::normalize($button);
+            if (!$this->isButtonDisabled($button->buttonId, $dtDisabledIdButtons)) {
+                $this->columnsName[] = $button->viewName;
             }
         }
     }

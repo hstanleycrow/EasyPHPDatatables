@@ -2,20 +2,19 @@
 
 namespace hstanleycrow\EasyPHPDatatables\Formatters;
 
+use hstanleycrow\EasyPHPDatatables\Config;
+
 class DecimalFormatter implements IColumnFormatterGenerator
 {
     public function generate(): callable
     {
-        return function ($data, $row) {
-            $decimalSeparator = NumberFormatConfig::getDecimalSeparator();
-            $thousandsSeparator = NumberFormatConfig::getThousandsSeparator();
-            $decimals = NumberFormatConfig::getDecimals();
-
+        $config = Config::instance();
+        return function ($data, $row) use ($config) {
             return number_format(
-                $data,
-                $decimals,
-                $thousandsSeparator,
-                $decimalSeparator
+                (float) $data,
+                $config->getDecimals(),
+                $config->getDecimalSeparator(),
+                $config->getThousandSeparator()
             );
         };
     }
