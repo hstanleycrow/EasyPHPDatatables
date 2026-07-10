@@ -1,6 +1,7 @@
 {
     "name": "hstanleycrow/easyphpdatatables",
     "description": "Standalone PHP server-side processing engine for DataTables.net: query, paginate, filter and order from a single PHP table definition.",
+    "type": "library",
     "keywords": [
         "php",
         "datatables",
@@ -11,6 +12,7 @@
     ],
     "license": "MIT",
     "homepage": "https://github.com/hstanleycrow/EasyPHPDatatables",
+    "version": "2.0.0",
     "authors": [
         {
             "name": "Harold Rivas AKA Harold Crow",
