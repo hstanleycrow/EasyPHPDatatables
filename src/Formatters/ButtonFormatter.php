@@ -19,7 +19,7 @@ class ButtonFormatter implements IColumnFormatterGenerator
     {
         $href = $this->model . '/' . $this->path . '/';
         return function ($d, $row) use ($href) {
-            $href .=  $d . '/"';
+            $href .= $d . '/';
 
             if ($this->buttonClass && class_exists($this->buttonClass)) {
                 return (new $this->buttonClass($href))->render();

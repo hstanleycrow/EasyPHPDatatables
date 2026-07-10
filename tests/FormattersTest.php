@@ -11,6 +11,7 @@ use hstanleycrow\EasyPHPDatatables\Formatters\TimeFormatter;
 use hstanleycrow\EasyPHPDatatables\Formatters\IntFormatter;
 use hstanleycrow\EasyPHPDatatables\Formatters\TextFormatter;
 use hstanleycrow\EasyPHPDatatables\Formatters\MailtoFormatter;
+use hstanleycrow\EasyPHPDatatables\Formatters\ButtonFormatter;
 
 #[CoversClass(MoneyFormatter::class)]
 #[CoversClass(DecimalFormatter::class)]
@@ -20,6 +21,7 @@ use hstanleycrow\EasyPHPDatatables\Formatters\MailtoFormatter;
 #[CoversClass(IntFormatter::class)]
 #[CoversClass(TextFormatter::class)]
 #[CoversClass(MailtoFormatter::class)]
+#[CoversClass(ButtonFormatter::class)]
 class FormattersTest extends TestCase
 {
     protected function setUp(): void
@@ -92,5 +94,11 @@ class FormattersTest extends TestCase
     {
         $format = (new MailtoFormatter())->generate();
         $this->assertStringContainsString('mailto:a@b.com', $format('a@b.com', []));
+    }
+
+    public function testButtonBuildsHrefWithoutTrailingQuote(): void
+    {
+        $format = (new ButtonFormatter('user', 'edit', 'Edit'))->generate();
+        $this->assertSame('<a href="user/edit/1/" >Edit</a>', $format(1, []));
     }
 }
