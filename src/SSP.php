@@ -290,7 +290,8 @@ class SSP
             $bindings,
             "SELECT COUNT(*) FROM (SELECT 1 $fromAndFilters) AS filtered_count"
         );
-        $recordsFiltered = $resFilterLength[0][0];
+        // Read by position but fetch-mode independent (works with FETCH_ASSOC, FETCH_NUM, FETCH_BOTH)
+        $recordsFiltered = (int) array_values($resFilterLength[0])[0];
 
         // Total data set length
         $resTotalLength = SSP::sql_exec(
@@ -298,7 +299,7 @@ class SSP
             "SELECT COUNT(`{$primaryKey}`)
 			 FROM   `$table`"
         );
-        $recordsTotal = $resTotalLength[0][0];
+        $recordsTotal = (int) array_values($resTotalLength[0])[0];
 
 
         /*
