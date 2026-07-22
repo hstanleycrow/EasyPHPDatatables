@@ -22,10 +22,23 @@ class ButtonFormatter implements IColumnFormatterGenerator
             $href .= $d . '/';
 
             if ($this->buttonClass && class_exists($this->buttonClass)) {
-                return (new $this->buttonClass($href))->render();
+                return (new $this->buttonClass(...$this->buttonArguments($href)))->render();
             }
 
             return '<a href="' . $href . '" >' . $this->buttonText . '</a>';
         };
+    }
+
+    /**
+     * The button text is only injected when the class declares a second constructor
+     * parameter, so classes written against the previous one-argument contract keep working.
+     */
+    private function buttonArguments(string $href): array
+    {
+        $constructor = (new \ReflectionClass($this->buttonClass))->getConstructor();
+
+        return $constructor !== null && $constructor->getNumberOfParameters() >= 2
+            ? [$href, $this->buttonText]
+            : [$href];
     }
 }

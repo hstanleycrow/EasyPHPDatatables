@@ -101,4 +101,40 @@ class FormattersTest extends TestCase
         $format = (new ButtonFormatter('user', 'edit', 'Edit'))->generate();
         $this->assertSame('<a href="user/edit/1/" >Edit</a>', $format(1, []));
     }
+
+    public function testButtonClassWithTextParameterReceivesButtonText(): void
+    {
+        $format = (new ButtonFormatter('user', 'edit', 'Edit', TextAwareButtonStub::class))->generate();
+        $this->assertSame('<a href="user/edit/1/">Edit</a>', $format(1, []));
+    }
+
+    public function testButtonClassWithoutTextParameterStillWorks(): void
+    {
+        $format = (new ButtonFormatter('user', 'edit', 'Edit', HrefOnlyButtonStub::class))->generate();
+        $this->assertSame('<a href="user/edit/1/">hardcoded</a>', $format(1, []));
+    }
+}
+
+class HrefOnlyButtonStub
+{
+    public function __construct(private string $href)
+    {
+    }
+
+    public function render(): string
+    {
+        return '<a href="' . $this->href . '">hardcoded</a>';
+    }
+}
+
+class TextAwareButtonStub
+{
+    public function __construct(private string $href, private string $buttonText)
+    {
+    }
+
+    public function render(): string
+    {
+        return '<a href="' . $this->href . '">' . $this->buttonText . '</a>';
+    }
 }

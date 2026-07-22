@@ -8,6 +8,7 @@ class DatatableOptions
     protected int $rowsPerPage = 25;
     protected string $loadingErrorMessage = '';
     protected string $ajaxUrl = '';
+    protected ?array $defaultOrder = null;
 
 
     public function __construct()
@@ -25,6 +26,24 @@ class DatatableOptions
     {
         $this->rowsPerPage = $rowsPerPage;
         return $this;
+    }
+    public function setDefaultOrder(int $column, string $dir = 'asc'): self
+    {
+        if ($column < 0) {
+            throw new \InvalidArgumentException('Order column index must be zero or greater.');
+        }
+
+        $dir = strtolower($dir);
+        if (!in_array($dir, ['asc', 'desc'], true)) {
+            throw new \InvalidArgumentException('Order direction must be "asc" or "desc".');
+        }
+
+        $this->defaultOrder = ['column' => $column, 'dir' => $dir];
+        return $this;
+    }
+    public function getDefaultOrder(): ?array
+    {
+        return $this->defaultOrder;
     }
     public function setAjaxUrl(string $ajaxUrl): self
     {

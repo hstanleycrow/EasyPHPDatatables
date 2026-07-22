@@ -67,12 +67,16 @@ Claves del array asociativo (que consume `ActionButton::fromArray`):
 | Clave | Requerido | Significado |
 | --- | --- | --- |
 | `button_id` | sí | Identificador; se compara contra el arreglo de botones deshabilitados del constructor. |
-| `view_name` | sí | Texto del encabezado de la columna del botón. |
+| `view_name` | sí | Texto del encabezado (`<th>`) de la columna del botón. No es el texto del enlace. |
 | `db_name` | sí | Columna SQL que alimenta el botón (normalmente la PK). |
 | `field` | sí | Clave del resultado. |
 | `path` | sí | Segmento de ruta añadido después de `model`, p. ej. `edit`. |
-| `buttonText` | sí | Texto del enlace. |
+| `buttonText` | sí | Texto del `<a>` por defecto, y segundo argumento del constructor de `buttonClass`. |
 | `buttonClass` | no | FQCN de una clase de botón renderizable; si no, cae a un `<a>` plano. |
+
+Contrato de `buttonClass`: `__construct(string $href, string $buttonText)` más `render(): string`.
+El segundo parámetro es opcional: decláralo para recibir `buttonText`; si no lo declaras, la clase
+se construye solo con `$href` (las clases de un solo argumento siguen funcionando igual).
 
 `getJoinQuery()`: devuelve `"FROM \`users\` AS \`a\`"` para una sola tabla, o un `FROM ... JOIN ... ON ...` completo para joins. Cuando hay un JOIN, aliasea las columnas con `as` y refiérelas por el alias en `db_name`.
 
@@ -130,6 +134,7 @@ setTableId(string $tableId): self
 addCssClass(string $class): self
 setDTLanguage(string $language): self       // 'en' | 'es' | 'es-MX'
 setDTRowsPerPage(int $rowsPerPage = 25): self
+setDefaultOrder(int $column, string $dir = 'asc'): self  // orden inicial; column es el índice base 0
 setFramework(string $framework): void       // ver frameworks
 render(): string
 autoLoadCssResources(): string
@@ -174,6 +179,7 @@ Librería (todas opcionales, valores por defecto entre paréntesis): `DT_DEFINIT
 ## Restricciones y detalles
 
 - El endpoint debe ser alcanzable por URL y debe cargar el autoloader de Composer antes de llamar a `SSP::handle()`.
+- `setDefaultOrder()` recibe el índice base 0 de la columna renderizada (las columnas de botones van después de las de datos). La dirección debe ser `asc` o `desc`; cualquier otra lanza `InvalidArgumentException`. Si no se llama, no se emite la opción `order` y DataTables aplica su propio default.
 - Los índices `dt` de columna se asignan automáticamente y están aislados por instancia de `Datatable`; múltiples tablas por página no interfieren.
 - Todos los valores inyectados en el JavaScript generado pasan por `json_encode`; no los entrecomilles manualmente.
 - `getExtraCondition()` devuelve un fragmento SQL crudo; constrúyelo solo a partir de entrada confiable.

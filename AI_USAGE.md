@@ -67,12 +67,16 @@ Associative-array keys (consumed by `ActionButton::fromArray`):
 | Key | Required | Meaning |
 | --- | --- | --- |
 | `button_id` | yes | Identifier; matched against the constructor's disabled-buttons array. |
-| `view_name` | yes | Header text of the button column. |
+| `view_name` | yes | Header text of the button column (`<th>`). Not the anchor text. |
 | `db_name` | yes | SQL column feeding the button (usually the PK). |
 | `field` | yes | Result key. |
 | `path` | yes | Path segment appended after `model`, e.g. `edit`. |
-| `buttonText` | yes | Anchor text. |
+| `buttonText` | yes | Anchor text of the default `<a>`, and the second constructor argument passed to `buttonClass`. |
 | `buttonClass` | no | FQCN of a renderable button class; falls back to a plain `<a>`. |
+
+`buttonClass` contract: `__construct(string $href, string $buttonText)` plus `render(): string`.
+The second parameter is optional — declare it to receive `buttonText`, omit it and the class is
+constructed with `$href` alone (one-argument classes keep working unchanged).
 
 `getJoinQuery()`: return `"FROM \`users\` AS \`a\`"` for a single table, or a full `FROM ... JOIN ... ON ...` for joins. When a JOIN is present, alias columns with `as` and reference them with the alias in `db_name`.
 
@@ -130,6 +134,7 @@ setTableId(string $tableId): self
 addCssClass(string $class): self
 setDTLanguage(string $language): self       // 'en' | 'es' | 'es-MX'
 setDTRowsPerPage(int $rowsPerPage = 25): self
+setDefaultOrder(int $column, string $dir = 'asc'): self  // initial sort; column is the 0-based index
 setFramework(string $framework): void       // see frameworks
 render(): string
 autoLoadCssResources(): string
@@ -174,6 +179,7 @@ Library (all optional, defaults in parentheses): `DT_DEFINITIONS_NAMESPACE` (`hs
 ## Constraints and gotchas
 
 - The endpoint must be reachable by URL and must load the Composer autoloader before calling `SSP::handle()`.
+- `setDefaultOrder()` takes the 0-based index of the rendered column (button columns are appended after the data columns). Direction must be `asc` or `desc`; anything else throws `InvalidArgumentException`. Without it the `order` option is not emitted and DataTables applies its own default.
 - Column `dt` indices are assigned automatically and are isolated per `Datatable` instance; multiple tables per page do not interfere.
 - All values injected into the generated JavaScript are passed through `json_encode`; do not manually quote them.
 - `getExtraCondition()` returns a raw SQL fragment; only build it from trusted input.

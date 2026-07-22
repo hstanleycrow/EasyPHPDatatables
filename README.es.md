@@ -149,6 +149,7 @@ $datatable = new Datatable('user');
 | `addCssClass(string $class): self` | Agrega una clase CSS a la `<table>`. |
 | `setDTLanguage(string $language): self` | `en`, `es` o `es-MX`. |
 | `setDTRowsPerPage(int $rows = 25): self` | Filas por página. |
+| `setDefaultOrder(int $column, string $dir = 'asc'): self` | Orden inicial, por índice de columna base 0. Si no se llama, DataTables aplica su propio default. |
 | `setFramework(string $framework): void` | Integración de estilos (ver abajo). |
 | `render(): string` | El marcado `<table>` con encabezados. |
 | `autoLoadCssResources(): string` | Etiquetas `<link>` de DataTables. |
@@ -174,14 +175,18 @@ new Column(
 
 new ActionButton(
     string $buttonId,            // se compara contra los ids de botones deshabilitados
-    string $viewName,
+    string $viewName,            // encabezado de la columna del botón
     string $dbName,
     string $field,
     string $path,                // segmento de ruta después del model en el href
-    string $buttonText,
+    string $buttonText,          // texto del enlace, también se pasa a la clase del botón
     ?string $buttonClass = null  // FQCN de una clase de botón renderizable
 );
 ```
+
+Una `buttonClass` debe exponer `render(): string` y un constructor de la forma
+`__construct(string $href, string $buttonText)`. El segundo parámetro es opcional: decláralo para
+recibir `buttonText`; si no lo declaras, la clase se construye solo con `$href`.
 
 Devolver los arrays asociativos equivalentes desde `getColumns()` / `getButtons()` sigue soportado; la librería normaliza cualquiera de las dos formas vía `Column::normalize()` / `ActionButton::normalize()`.
 

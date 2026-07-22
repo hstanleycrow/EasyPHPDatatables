@@ -151,6 +151,7 @@ $datatable = new Datatable('user');
 | `addCssClass(string $class): self` | Appends a CSS class to the `<table>`. |
 | `setDTLanguage(string $language): self` | `en`, `es` or `es-MX`. |
 | `setDTRowsPerPage(int $rows = 25): self` | Page length. |
+| `setDefaultOrder(int $column, string $dir = 'asc'): self` | Initial sort, by 0-based column index. Omit it and DataTables applies its own default. |
 | `setFramework(string $framework): void` | Styling integration (see below). |
 | `render(): string` | The `<table>` markup with headers. |
 | `autoLoadCssResources(): string` | DataTables `<link>` tags. |
@@ -176,14 +177,18 @@ new Column(
 
 new ActionButton(
     string $buttonId,            // matched against the disabled-button ids
-    string $viewName,
+    string $viewName,            // header text of the button column
     string $dbName,
     string $field,
     string $path,                // path segment after the model in the href
-    string $buttonText,
+    string $buttonText,          // anchor text, also passed to the button class
     ?string $buttonClass = null  // FQCN of a renderable button class
 );
 ```
+
+A `buttonClass` must expose `render(): string` and a constructor of the form
+`__construct(string $href, string $buttonText)`. The second parameter is optional: declare it to
+receive `buttonText`, omit it and the class is constructed with `$href` alone.
 
 Returning the equivalent associative arrays from `getColumns()` / `getButtons()` is still supported; the library normalizes either form via `Column::normalize()` / `ActionButton::normalize()`.
 

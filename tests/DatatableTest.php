@@ -50,4 +50,35 @@ class DatatableTest extends TestCase
         $this->assertStringContainsString('new DataTable("#products"', $js);
         $this->assertStringContainsString('ajax: "datatables.php?dtDefinition=product"', $js);
     }
+
+    public function testDefaultOrderIsEmittedWhenSet(): void
+    {
+        $js = (new Datatable('product'))
+            ->setAjaxUrl('datatables.php')
+            ->setDefaultOrder(2, 'desc')
+            ->autoLoadDatatableJS();
+
+        $this->assertStringContainsString('order: [[2, "desc"]]', $js);
+    }
+
+    public function testDefaultOrderIsOmittedWhenNotSet(): void
+    {
+        $js = (new Datatable('product'))
+            ->setAjaxUrl('datatables.php')
+            ->autoLoadDatatableJS();
+
+        $this->assertStringNotContainsString('order:', $js);
+    }
+
+    public function testDefaultOrderRejectsUnknownDirection(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Datatable('product'))->setDefaultOrder(0, 'diagonal');
+    }
+
+    public function testDefaultOrderRejectsNegativeColumn(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Datatable('product'))->setDefaultOrder(-1, 'asc');
+    }
 }

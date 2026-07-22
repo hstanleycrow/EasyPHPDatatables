@@ -26,7 +26,7 @@ $datatable = new Datatable(DTDefinition: 'user', dtDisabledIdButtons: []);
         <?= $datatable->setTableId('example')->render(); ?>
     </div>
     <?= $datatable->autoLoadJsResources(); ?>
-    <?= $datatable->setAjaxUrl('datatables.php')->autoLoadDatatableJS(); ?>
+    <?= $datatable->setAjaxUrl('datatables.php')->setDefaultOrder(4, 'desc')->autoLoadDatatableJS(); ?>
 </body>
 
 </html>

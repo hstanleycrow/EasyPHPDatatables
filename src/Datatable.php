@@ -75,6 +75,11 @@ class Datatable
         $this->options->setDTRowsPerPage($rowsPerPage);
         return $this;
     }
+    public function setDefaultOrder(int $column, string $dir = 'asc'): self
+    {
+        $this->options->setDefaultOrder($column, $dir);
+        return $this;
+    }
     public function setAjaxUrl(string $ajaxUrl): self
     {
         $this->options->setAjaxUrl($ajaxUrl);

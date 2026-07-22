@@ -49,11 +49,19 @@ class ResourcesBuilder
         $selector = self::toJs('#' . $props->getTableId());
         $ajax = self::toJs($ajax_url);
 
+        $order = $options->getDefaultOrder();
+        $orderJs = $order === null
+            ? ''
+            : "
+            order: [[" . $order['column'] . ", " . self::toJs($order['dir']) . "]],
+            ";
+
         return "<script>
         $.fn.dataTable.ext.errMode = () => alert(" . $errorMessage . ");
         new DataTable(" . $selector . ", {
             ajax: " . $ajax . ","
-            . Language::inlineConfig($options->getLanguage()) .
+            . Language::inlineConfig($options->getLanguage())
+            . $orderJs .
             "processing: true,
             serverSide: true,
             'pageLength': " . $options->getRowsPerPage() . "
